@@ -1,0 +1,55 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/backend/" />
+  <Folder Name="/src/backend/Gateway/">
+    <Project Path="src/backend/Gateway/App.Gateway/App.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Host/">
+    <Project Path="src/backend/Host/App.Host/App.Host.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Modules/" />
+  <Folder Name="/src/backend/Modules/Budget/">
+    <Project Path="src/backend/Modules/Budget/Budget.Api/Budget.Api.csproj" />
+    <Project Path="src/backend/Modules/Budget/Budget.Application/Budget.Application.csproj" />
+    <Project Path="src/backend/Modules/Budget/Budget.Domain/Budget.Domain.csproj" />
+    <Project Path="src/backend/Modules/Budget/Budget.Infrastructure/Budget.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Modules/Identity/">
+    <Project Path="src/backend/Modules/Identity/Identity.Api/Identity.Api.csproj" />
+    <Project Path="src/backend/Modules/Identity/Identity.Application/Identity.Application.csproj" />
+    <Project Path="src/backend/Modules/Identity/Identity.Domain/Identity.Domain.csproj" />
+    <Project Path="src/backend/Modules/Identity/Identity.Infrastructure/Identity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Modules/Notifications/">
+    <Project Path="src/backend/Modules/Notifications/Notifications.Api/Notifications.Api.csproj" />
+    <Project Path="src/backend/Modules/Notifications/Notifications.Application/Notifications.Application.csproj" />
+    <Project Path="src/backend/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj" />
+    <Project Path="src/backend/Modules/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Modules/Sync/">
+    <Project Path="src/backend/Modules/Sync/Sync.Api/Sync.Api.csproj" />
+    <Project Path="src/backend/Modules/Sync/Sync.Application/Sync.Application.csproj" />
+    <Project Path="src/backend/Modules/Sync/Sync.Domain/Sync.Domain.csproj" />
+    <Project Path="src/backend/Modules/Sync/Sync.Infrastructure/Sync.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Modules/Tasks/">
+    <Project Path="src/backend/Modules/Tasks/Tasks.Api/Tasks.Api.csproj" />
+    <Project Path="src/backend/Modules/Tasks/Tasks.Application/Tasks.Application.csproj" />
+    <Project Path="src/backend/Modules/Tasks/Tasks.Domain/Tasks.Domain.csproj" />
+    <Project Path="src/backend/Modules/Tasks/Tasks.Infrastructure/Tasks.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Shared/">
+    <Project Path="src/backend/Shared/Shared.Infrastructure/Shared.Infrastructure.csproj" />
+    <Project Path="src/backend/Shared/Shared.Kernel/Shared.Kernel.csproj" />
+  </Folder>
+  <Folder Name="/src/mobile/">
+    <Project Path="src/mobile/PersonalHub.Mobile/PersonalHub.Mobile.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/integration/">
+    <Project Path="tests/integration/PersonalHub.Tests.Integration/PersonalHub.Tests.Integration.csproj" />
+  </Folder>
+  <Folder Name="/tests/unit/">
+    <Project Path="tests/unit/PersonalHub.Tests.Unit/PersonalHub.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
