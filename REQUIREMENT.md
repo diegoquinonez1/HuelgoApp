@@ -283,11 +283,492 @@ Los siguientes ítems fueron identificados pero quedan **explícitamente fuera d
 
 ## 10. Próximos Pasos
 
-- [ ] Validar este documento con el product owner.
-- [ ] Definir historias de usuario formales con criterios de aceptación para el Alcance 1.
-- [ ] Crear wireframes / prototipo de baja fidelidad del dashboard y módulo de presupuesto.
-- [ ] Definición técnica: arquitectura, stack, estructura de API modular.
+- [x] Validar documento con el product owner.
+- [x] Crear wireframes del dashboard, presupuesto y tareas.
+- [x] Definición técnica: arquitectura, stack, estructura de API modular.
+- [ ] Definir historias de usuario formales con criterios de aceptación por alcance.
 - [ ] Estimación y plan de desarrollo del MVP.
+- [ ] Scaffolding inicial del repositorio (estructura de carpetas y proyectos).
+
+---
+
+## 12. Arquitectura Técnica
+
+### 12.1 Visión General
+
+El sistema se compone de tres capas principales: el cliente móvil (MAUI), una capa de entrada (API Gateway) y el backend modular. La arquitectura adopta el patrón **Modular Monolith** como punto de partida, con límites de módulo tan claros que cada uno puede extraerse como microservicio independiente en el futuro sin cambiar contratos ni interfaces públicas.
+
+**Principios de diseño técnico:**
+
+| Principio | Aplicación |
+|---|---|
+| **Cloud-native portable** | Contenedores Docker + Kubernetes. Sin SDKs propietarios de Azure en la lógica de negocio. Portable a cualquier nube o on-premise. |
+| **Modular** | Cada módulo de negocio es un proyecto independiente con su propio dominio, datos y contratos. No hay dependencias cruzadas directas. |
+| **Offline-first** | SQLite en el dispositivo como fuente de verdad local. Sincronización delta en background cuando hay red. |
+| **Open source first** | PostgreSQL, Redis, RabbitMQ, OpenTelemetry. Sin licencias propietarias en componentes críticos. |
+| **Escalabilidad horizontal** | Stateless API, caché distribuida, mensajería asíncrona. Escala agregando instancias, no reescribiendo. |
+
+---
+
+### 12.2 Stack Tecnológico
+
+#### Frontend
+
+| Capa | Tecnología | Justificación |
+|---|---|---|
+| UI multiplataforma | **.NET MAUI 9** | Android + iOS desde una sola base de código en C# |
+| Patrón de presentación | **MVVM + CommunityToolkit.Mvvm** | Separación limpia de UI y lógica de vista |
+| Navegación | **Shell Navigation** | Navegación declarativa, soporte deep links |
+| Base de datos local | **SQLite + EF Core** | Persistencia offline-first en el dispositivo |
+| Sincronización | **Delta sync con timestamps** | Solo sincroniza registros cambiados desde última sync |
+| HTTP Client | **Refit + HttpClientFactory** | Contratos de API tipados, retry policies |
+| Inyección de dependencias | **Microsoft.Extensions.DI** | Nativo de .NET, sin terceros |
+
+#### Backend
+
+| Capa | Tecnología | Justificación |
+|---|---|---|
+| Framework | **ASP.NET Core 9** | Alto rendimiento, nativo .NET, LTS |
+| API Gateway | **YARP** (Yet Another Reverse Proxy) | Open source de Microsoft, enrutamiento y rate limiting |
+| Autenticación | **OpenIddict** | OAuth2 / OIDC open source, sin servidor externo de pago |
+| ORM | **EF Core 9** | Code-first, migraciones, soporte PostgreSQL |
+| Base de datos | **PostgreSQL 16** | Open source, ACID, JSON nativo, portable |
+| Caché | **Redis 7** | Caché distribuida, rate limiting, pub/sub ligero |
+| Mensajería asíncrona | **MassTransit + RabbitMQ** | Abstracción de bus; se puede cambiar el broker sin tocar el código |
+| Notificaciones push | **Firebase Cloud Messaging (FCM)** | Android + iOS, gratuito, sin vendor lock-in de Azure |
+| Observabilidad | **OpenTelemetry + Seq** | Trazas, métricas y logs; portable a cualquier backend (Jaeger, Grafana, etc.) |
+| Pruebas | **xUnit + Testcontainers** | Tests de integración con contenedores reales |
+
+#### Infraestructura y DevOps
+
+| Capa | Tecnología | Justificación |
+|---|---|---|
+| Contenedores | **Docker + Docker Compose** | Dev local idéntico a producción |
+| Orquestación | **Kubernetes (AKS)** | Portable a cualquier K8s; sin dependencia de Azure en manifiestos |
+| IaC | **Bicep** (Azure) + **Helm** (K8s) | Bicep solo para provisionar recursos Azure; la app no lo conoce |
+| CI/CD | **GitHub Actions** | Pipelines como código, gratuito para repos públicos |
+| Registro de imágenes | **Azure Container Registry** | Puede reemplazarse por Docker Hub o cualquier registry OCI |
+
+---
+
+### 12.3 Diagrama de Arquitectura — Vista de Contenedores
+
+```mermaid
+graph TB
+    subgraph Dispositivo["📱 Dispositivo Móvil"]
+        MAUI["MAUI App\n(Android / iOS)"]
+        SQLite["SQLite\n(datos locales)"]
+        MAUI <--> SQLite
+    end
+
+    subgraph Azure["☁️ Azure / Kubernetes Cluster"]
+        GW["API Gateway\n(YARP)"]
+
+        subgraph Backend["Backend — Modular Monolith"]
+            AuthMod["🔐 Identity Module\n(OpenIddict)"]
+            BudgetMod["💰 Budget Module"]
+            TaskMod["✅ Tasks Module"]
+            NotifMod["🔔 Notifications Module"]
+            SyncMod["🔄 Sync Module"]
+        end
+
+        subgraph Data["Capa de Datos"]
+            PG[("PostgreSQL\n(por módulo/schema)")]
+            Redis[("Redis\nCache + PubSub")]
+            MQ["RabbitMQ\nMensajería async"]
+        end
+
+        FCM["🌐 Firebase Cloud Messaging\n(externo)"]
+    end
+
+    MAUI -->|"HTTPS + JWT"| GW
+    GW --> AuthMod
+    GW --> BudgetMod
+    GW --> TaskMod
+    GW --> SyncMod
+
+    AuthMod --> PG
+    BudgetMod --> PG
+    TaskMod --> PG
+    SyncMod --> PG
+
+    BudgetMod --> Redis
+    TaskMod --> Redis
+    AuthMod --> Redis
+
+    BudgetMod -->|"eventos de dominio"| MQ
+    TaskMod -->|"eventos de dominio"| MQ
+    MQ --> NotifMod
+    NotifMod --> FCM
+    FCM -->|"push notification"| MAUI
+```
+
+---
+
+### 12.4 Módulos del Backend
+
+Cada módulo es un proyecto .NET independiente. La comunicación intra-módulo es **en proceso** (interfaces). La comunicación inter-módulo es **por eventos** a través del bus de mensajes (MassTransit/RabbitMQ), nunca por referencia directa entre módulos.
+
+```mermaid
+graph LR
+    subgraph IdentityModule["Identity Module"]
+        IM_API["API\n/auth/*"]
+        IM_Domain["Domain\nUser, Profile"]
+        IM_DB["Schema: identity"]
+    end
+
+    subgraph BudgetModule["Budget Module"]
+        BM_API["API\n/budget/*"]
+        BM_Domain["Domain\nTransaction, Category\nPeriod, RecurringRule"]
+        BM_DB["Schema: budget"]
+    end
+
+    subgraph TasksModule["Tasks Module"]
+        TM_API["API\n/tasks/*"]
+        TM_Domain["Domain\nTask, Subtask\nPriority, Reminder"]
+        TM_DB["Schema: tasks"]
+    end
+
+    subgraph NotificationsModule["Notifications Module"]
+        NM_Worker["Background Worker"]
+        NM_Domain["Domain\nAlert, PushToken"]
+        NM_DB["Schema: notifications"]
+    end
+
+    subgraph SyncModule["Sync Module"]
+        SM_API["API\n/sync/*"]
+        SM_Logic["Delta Sync Logic\nConflict Resolution"]
+    end
+
+    BudgetModule -->|"BudgetThresholdExceededEvent"| NotificationsModule
+    BudgetModule -->|"RecurringDueEvent"| NotificationsModule
+    TasksModule -->|"ReminderDueEvent"| NotificationsModule
+    IdentityModule -->|"UserCreatedEvent"| BudgetModule
+    IdentityModule -->|"UserCreatedEvent"| TasksModule
+    SyncModule --> BudgetModule
+    SyncModule --> TasksModule
+```
+
+#### Estructura de módulo (patrón vertical slice)
+
+```
+src/
+├── Modules/
+│   ├── Identity/
+│   │   ├── Identity.Api/          ← controllers, endpoints
+│   │   ├── Identity.Application/  ← CQRS commands/queries (MediatR)
+│   │   ├── Identity.Domain/       ← entidades, value objects, domain events
+│   │   └── Identity.Infrastructure/ ← EF Core, repositorios, external services
+│   │
+│   ├── Budget/
+│   │   ├── Budget.Api/
+│   │   ├── Budget.Application/
+│   │   ├── Budget.Domain/
+│   │   └── Budget.Infrastructure/
+│   │
+│   ├── Tasks/
+│   │   ├── Tasks.Api/
+│   │   ├── Tasks.Application/
+│   │   ├── Tasks.Domain/
+│   │   └── Tasks.Infrastructure/
+│   │
+│   ├── Notifications/
+│   └── Sync/
+│
+├── Gateway/                       ← YARP API Gateway
+├── Shared/
+│   ├── Shared.Kernel/             ← tipos base, abstracciones, contratos de eventos
+│   └── Shared.Infrastructure/     ← logging, resiliencia, configuración común
+│
+└── Host/
+    └── App.Host/                  ← punto de entrada, DI composition root
+```
+
+---
+
+### 12.5 Estrategia Offline-First y Sincronización
+
+La app funciona completamente sin conexión. La sincronización es **delta-based**: solo se transfieren los registros modificados desde la última sincronización exitosa.
+
+```mermaid
+sequenceDiagram
+    participant App as MAUI App
+    participant SQLite as SQLite Local
+    participant SyncSvc as Sync Module (API)
+    participant DB as PostgreSQL
+
+    Note over App,SQLite: Usuario sin conexión
+    App->>SQLite: Escribe transacción (INSERT/UPDATE)
+    SQLite-->>App: OK — guarda con sync_status = PENDING
+
+    Note over App,DB: Conexión recuperada
+    App->>SyncSvc: POST /sync/push {cambios locales desde last_sync_at}
+    SyncSvc->>DB: Aplica cambios con conflict check (last_write_wins)
+    DB-->>SyncSvc: OK + server_changes
+    SyncSvc-->>App: {server_changes, new_sync_token}
+    App->>SQLite: Aplica server_changes
+    App->>SQLite: Marca registros como sync_status = SYNCED
+```
+
+**Reglas de conflicto:**
+- Campo `updated_at` en cada registro (UTC).
+- Si el servidor tiene un `updated_at` más reciente: el servidor gana.
+- Si el cliente tiene un `updated_at` más reciente: el cliente gana.
+- Eliminaciones: se usa **soft delete** con `deleted_at`; nunca se borra físicamente en sync.
+
+---
+
+### 12.6 Modelo de Datos por Módulo
+
+#### Schema: `identity`
+
+```mermaid
+erDiagram
+    Users {
+        uuid id PK
+        string email UK
+        string password_hash
+        string first_name
+        string last_name
+        date birth_date
+        string push_token
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+
+#### Schema: `budget`
+
+```mermaid
+erDiagram
+    Transactions {
+        uuid id PK
+        uuid user_id FK
+        string type
+        decimal amount
+        string currency
+        date transaction_date
+        string status
+        uuid category_id FK
+        string notes
+        bool is_recurring
+        uuid recurring_rule_id FK
+        string sync_status
+        timestamp updated_at
+        timestamp deleted_at
+    }
+    Categories {
+        uuid id PK
+        uuid user_id FK
+        string name
+        string icon
+        bool is_system
+        timestamp updated_at
+    }
+    BudgetGoals {
+        uuid id PK
+        uuid user_id FK
+        uuid category_id FK
+        decimal amount
+        int alert_threshold_pct
+        string period_type
+        timestamp updated_at
+    }
+    RecurringRules {
+        uuid id PK
+        uuid user_id FK
+        string frequency
+        date next_due_date
+        bool is_active
+        timestamp updated_at
+    }
+
+    Transactions }o--|| Categories : "categoría"
+    Transactions }o--o| RecurringRules : "regla recurrente"
+    BudgetGoals }o--|| Categories : "meta por categoría"
+```
+
+#### Schema: `tasks`
+
+```mermaid
+erDiagram
+    Tasks {
+        uuid id PK
+        uuid user_id FK
+        string title
+        string description
+        timestamp due_date
+        string priority
+        string status
+        uuid category_id FK
+        decimal monetary_value
+        string currency
+        string sync_status
+        timestamp updated_at
+        timestamp deleted_at
+    }
+    Subtasks {
+        uuid id PK
+        uuid task_id FK
+        string title
+        bool is_completed
+        int sort_order
+        timestamp updated_at
+    }
+    Reminders {
+        uuid id PK
+        uuid task_id FK
+        timestamp remind_at
+        int advance_minutes
+        bool sent
+    }
+
+    Tasks ||--o{ Subtasks : "subtareas"
+    Tasks ||--o{ Reminders : "recordatorios"
+```
+
+---
+
+### 12.7 Comunicación API — Convenciones
+
+- **Protocolo:** HTTPS, REST JSON.
+- **Autenticación:** Bearer JWT (access token 15 min + refresh token 30 días).
+- **Versionado:** `/api/v1/` en todos los endpoints — cambios breaking generan `/api/v2/`.
+- **Paginación:** cursor-based (`?after=<cursor>&limit=50`) para listas grandes.
+- **Errores:** RFC 9457 Problem Details (`type`, `title`, `status`, `detail`).
+- **Idempotencia:** operaciones de escritura aceptan header `Idempotency-Key` para reintentos seguros desde móvil.
+
+---
+
+### 12.8 Seguridad
+
+| Área | Medida |
+|---|---|
+| Autenticación | OAuth2 / OIDC con OpenIddict. Tokens JWT firmados (RS256). |
+| Autorización | Resource-based: cada usuario solo accede a sus propios datos (user_id en queries). |
+| Transporte | TLS 1.2+ obligatorio. HSTS activado. |
+| Contraseñas | Argon2id hashing (vía ASP.NET Core Identity). |
+| Rate limiting | Redis token bucket por IP y por user_id en el Gateway. |
+| Secrets | Variables de entorno / Azure Key Vault. Nunca en código ni en repositorio. |
+| Datos en reposo | Cifrado de columnas sensibles (EF Core value converters) para datos financieros. |
+
+---
+
+### 12.9 Despliegue — Vista de Infraestructura Azure
+
+```mermaid
+graph TB
+    subgraph Internet
+        MobileApp["📱 MAUI App\n(Android / iOS)"]
+    end
+
+    subgraph AzureEdge["Azure — Edge"]
+        AppGW["Azure Application Gateway\n(WAF + TLS termination)"]
+    end
+
+    subgraph AKS["Azure Kubernetes Service (AKS)"]
+        subgraph IngressNS["Namespace: ingress"]
+            Ingress["NGINX Ingress Controller"]
+        end
+        subgraph AppNS["Namespace: app"]
+            GWPod["API Gateway Pod\n(YARP)"]
+            BackendPod["Backend Pod(s)\n(Modular Monolith)"]
+            WorkerPod["Notification Worker Pod"]
+            SyncPod["Sync Pod"]
+        end
+    end
+
+    subgraph AzureData["Azure — Datos (gestionados)"]
+        PGFlex["Azure Database for PostgreSQL\nFlexible Server"]
+        RedisCache["Azure Cache for Redis"]
+        ServiceBus["RabbitMQ on AKS\n(o Azure Service Bus con abstracción)"]
+    end
+
+    subgraph AzureOps["Azure — Operaciones"]
+        ACR["Azure Container Registry"]
+        KV["Azure Key Vault"]
+        Monitor["Azure Monitor\n+ OpenTelemetry Collector"]
+    end
+
+    MobileApp -->|"HTTPS"| AppGW
+    AppGW --> Ingress
+    Ingress --> GWPod
+    GWPod --> BackendPod
+    BackendPod --> PGFlex
+    BackendPod --> RedisCache
+    BackendPod --> ServiceBus
+    ServiceBus --> WorkerPod
+    BackendPod --> KV
+    BackendPod --> Monitor
+    ACR --> AKS
+```
+
+> **Portabilidad:** Los pods no usan SDKs de Azure. `Azure Database for PostgreSQL` puede reemplazarse por PostgreSQL en cualquier nube. `Azure Cache for Redis` por Redis self-hosted. `Azure Service Bus` por RabbitMQ (ya abstraído con MassTransit). Migrar de nube implica cambiar variables de entorno y Helm values, no código.
+
+---
+
+### 12.10 Pipeline CI/CD
+
+```mermaid
+graph LR
+    PR["Pull Request\n(GitHub)"] --> CI
+
+    subgraph CI["CI — GitHub Actions"]
+        Build["Build\n(dotnet build)"]
+        Test["Tests\n(unit + integration\nTestcontainers)"]
+        Lint["Lint + SAST\n(SonarCloud / Semgrep)"]
+        DockerBuild["Docker Build\n& Push to ACR"]
+    end
+
+    DockerBuild --> CD
+
+    subgraph CD["CD — GitHub Actions"]
+        DeployDev["Deploy to AKS\n(staging namespace)\nHelm upgrade"]
+        SmokeTest["Smoke Tests"]
+        DeployProd["Deploy to AKS\n(prod namespace)\nHelm upgrade"]
+    end
+
+    CI --> DeployDev
+    DeployDev --> SmokeTest
+    SmokeTest -->|"aprobado"| DeployProd
+```
+
+---
+
+### 12.11 Estructura del Repositorio
+
+```
+/
+├── .github/
+│   └── workflows/          ← pipelines CI/CD
+├── src/
+│   ├── mobile/
+│   │   └── MyApp.Maui/     ← proyecto MAUI
+│   ├── backend/
+│   │   ├── Gateway/        ← YARP Gateway
+│   │   ├── Host/           ← App.Host (entry point)
+│   │   ├── Modules/
+│   │   │   ├── Identity/
+│   │   │   ├── Budget/
+│   │   │   ├── Tasks/
+│   │   │   ├── Notifications/
+│   │   │   └── Sync/
+│   │   └── Shared/
+│   │       ├── Shared.Kernel/
+│   │       └── Shared.Infrastructure/
+│   └── infra/
+│       ├── docker/         ← Dockerfiles + docker-compose.yml
+│       ├── k8s/            ← Helm charts
+│       └── bicep/          ← IaC Azure
+├── tests/
+│   ├── unit/
+│   └── integration/
+├── docs/
+│   ├── REQUIREMENT.md
+│   ├── WIREFRAMES.md
+│   └── adr/                ← Architecture Decision Records
+└── README.md
+```
 
 ---
 
