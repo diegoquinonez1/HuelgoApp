@@ -286,9 +286,11 @@ Los siguientes ítems fueron identificados pero quedan **explícitamente fuera d
 - [x] Validar documento con el product owner.
 - [x] Crear wireframes del dashboard, presupuesto y tareas.
 - [x] Definición técnica: arquitectura, stack, estructura de API modular.
-- [ ] Definir historias de usuario formales con criterios de aceptación por alcance.
-- [ ] Estimación y plan de desarrollo del MVP.
-- [ ] Scaffolding inicial del repositorio (estructura de carpetas y proyectos).
+- [x] Scaffolding del repositorio (estructura de carpetas y proyectos .NET).
+- [x] Definir historias de usuario con criterios de aceptación — ambos alcances.
+- [x] Organizar historias en sprints con estimación.
+- [ ] Implementar Sprint 1: Autenticación + Offline-first.
+- [ ] Implementar Sprint 2: Dashboard + CRUD de transacciones.
 
 ---
 
@@ -740,15 +742,15 @@ graph LR
 ```
 /
 ├── .github/
-│   └── workflows/          ← pipelines CI/CD
+│   └── workflows/              ← pipelines CI/CD
 ├── src/
 │   ├── mobile/
-│   │   └── MyApp.Maui/     ← proyecto MAUI
+│   │   └── PersonalHub.Mobile/ ← proyecto MAUI (Android + iOS)
 │   ├── backend/
-│   │   ├── Gateway/        ← YARP Gateway
-│   │   ├── Host/           ← App.Host (entry point)
+│   │   ├── Gateway/App.Gateway/ ← YARP Gateway
+│   │   ├── Host/App.Host/       ← entry point, DI composition root
 │   │   ├── Modules/
-│   │   │   ├── Identity/
+│   │   │   ├── Identity/        ← {Domain, Application, Api, Infrastructure}
 │   │   │   ├── Budget/
 │   │   │   ├── Tasks/
 │   │   │   ├── Notifications/
@@ -757,22 +759,23 @@ graph LR
 │   │       ├── Shared.Kernel/
 │   │       └── Shared.Infrastructure/
 │   └── infra/
-│       ├── docker/         ← Dockerfiles + docker-compose.yml
-│       ├── k8s/            ← Helm charts
-│       └── bicep/          ← IaC Azure
+│       ├── docker/              ← docker-compose.yml (dev local)
+│       ├── k8s/helm/            ← Helm charts (AKS)
+│       └── bicep/               ← IaC Azure
 ├── tests/
 │   ├── unit/
 │   └── integration/
 ├── docs/
 │   ├── REQUIREMENT.md
 │   ├── WIREFRAMES.md
-│   └── adr/                ← Architecture Decision Records
+│   ├── USER_STORIES.md
+│   └── adr/                    ← Architecture Decision Records
 └── README.md
 ```
 
 ---
 
-## 11. Idea Original (Referencia)
+## 13. Idea Original (Referencia)
 
 > *Texto original del requerimiento inicial, conservado como trazabilidad:*
 

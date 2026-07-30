@@ -768,6 +768,218 @@
 
 ---
 
+## Plan de Sprints
+
+> **Duración de sprint:** 2 semanas
+> **Velocidad estimada:** 12–15 puntos por sprint
+> **Convención de estado:** 📋 Pendiente · 🔄 En progreso · ✅ Completado
+
+---
+
+### Sprint 0 — Fundación técnica ✅
+> *Completado — no incluye historias de usuario*
+
+| Entregable | Descripción |
+|---|---|
+| Repositorio local | Git init, .gitignore, README |
+| Solución .NET | 27 proyectos scaffoldeados, build 0 errores |
+| Infraestructura local | docker-compose (PostgreSQL, Redis, RabbitMQ, Seq) |
+| Documentación base | REQUIREMENT.md, WIREFRAMES.md, USER_STORIES.md |
+
+---
+
+### Sprint 1 — Autenticación + Offline-first 📋
+> **Puntos:** 11 · **Objetivo:** el usuario puede registrarse, iniciar sesión y operar sin conexión
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A1-001 | Registro de cuenta | 3 | 🔴 |
+| HU-A1-002 | Inicio de sesión | 2 | 🔴 |
+| HU-A1-004 | Cierre de sesión | 1 | 🔴 |
+| HU-A1-026 | Usar la app sin conexión | 5 | 🔴 |
+
+**Definición de "done" del sprint:**
+- [ ] Un usuario nuevo puede registrarse y quedar autenticado.
+- [ ] Un usuario existente puede iniciar y cerrar sesión.
+- [ ] Las operaciones de escritura se persisten en SQLite cuando no hay red.
+- [ ] Al recuperar la red, los datos se sincronizan con el servidor.
+- [ ] Tests unitarios e integración para flujos de auth y sync básico.
+
+---
+
+### Sprint 2 — Dashboard + CRUD de Transacciones 📋
+> **Puntos:** 15 · **Objetivo:** flujo completo de registro y consulta de movimientos financieros
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A1-005 | Ver resumen financiero en Dashboard | 3 | 🔴 |
+| HU-A1-006 | Cambiar período activo | 2 | 🔴 |
+| HU-A1-009 | Registrar una transacción | 5 | 🔴 |
+| HU-A1-010 | Editar una transacción | 3 | 🔴 |
+| HU-A1-011 | Eliminar una transacción | 2 | 🔴 |
+
+**Definición de "done" del sprint:**
+- [ ] El Dashboard muestra ingresos, gastos y balance neto del período activo.
+- [ ] El usuario puede crear una transacción en ≤ 3 toques.
+- [ ] El usuario puede editar y eliminar cualquier transacción.
+- [ ] El Dashboard se actualiza en tiempo real al registrar o modificar.
+
+---
+
+### Sprint 3 — Lista, Filtros y Categorías 📋
+> **Puntos:** 12 · **Objetivo:** el usuario puede navegar su historial y clasificar sus movimientos
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A1-012 | Listar y filtrar transacciones | 3 | 🔴 |
+| HU-A1-013 | Ver detalle de una transacción | 1 | 🟠 |
+| HU-A1-014 | Usar categorías del sistema | 1 | 🔴 |
+| HU-A1-015 | Crear categoría personalizada | 2 | 🟠 |
+| HU-A1-003 | Recuperación de contraseña | 2 | 🟠 |
+| HU-A1-007 | Ver resumen de presupuesto por categoría en Dashboard | 3 | 🔴 |
+
+**Definición de "done" del sprint:**
+- [ ] El usuario puede filtrar transacciones por tipo, categoría, estado y período.
+- [ ] Las 9 categorías del sistema están disponibles al crear una transacción.
+- [ ] El usuario puede crear, editar y eliminar sus propias categorías.
+- [ ] El Dashboard muestra barras de progreso por categoría con presupuesto configurado.
+
+---
+
+### Sprint 4 — Presupuesto Proyectado y Alertas 📋
+> **Puntos:** 11 · **Objetivo:** el usuario tiene control proactivo de sus límites de gasto
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A1-016 | Configurar el período de presupuesto | 3 | 🔴 |
+| HU-A1-017 | Configurar meta de presupuesto por categoría | 3 | 🟠 |
+| HU-A1-018 | Recibir alerta cuando se acerca o supera el presupuesto | 3 | 🟠 |
+| HU-A1-008 | Ver alertas activas en el Dashboard | 2 | 🟠 |
+
+**Definición de "done" del sprint:**
+- [ ] El usuario puede definir período mensual, quincenal, semanal o personalizado.
+- [ ] El usuario puede asignar una meta y umbral de alerta por categoría.
+- [ ] Se envía notificación push cuando se alcanza el umbral.
+- [ ] Las alertas activas aparecen en el Dashboard.
+
+---
+
+### Sprint 5 — Transacciones Recurrentes 📋
+> **Puntos:** 11 · **Objetivo:** el usuario gestiona compromisos financieros fijos sin olvidarlos
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A1-019 | Marcar una transacción como recurrente | 3 | 🟠 |
+| HU-A1-020 | Recibir notificación para confirmar una recurrente | 3 | 🟠 |
+| HU-A1-021 | Gestionar la lista de recurrentes | 2 | 🟠 |
+| HU-A1-023 | Ver gráficas de gastos por categoría | 3 | 🟠 |
+
+**Definición de "done" del sprint:**
+- [ ] El usuario puede marcar una transacción como recurrente con frecuencia definida.
+- [ ] La app notifica al usuario en la fecha de vencimiento para confirmar.
+- [ ] El usuario puede editar, pausar y activar recurrentes desde una lista.
+- [ ] La gráfica de torta muestra el desglose de gastos por categoría del período.
+
+---
+
+### Sprint 6 — Reportes, Exportación y Monedas 📋
+> **Puntos:** 8 · **Objetivo:** cierre del Alcance 1 con visibilidad y portabilidad de datos
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A1-024 | Ver evolución del balance en el tiempo | 3 | 🟡 |
+| HU-A1-025 | Exportar transacciones a Excel | 3 | 🟠 |
+| HU-A1-022 | Registrar transacción en moneda extranjera | 2 | 🟡 |
+
+**Definición de "done" del sprint:**
+- [ ] La gráfica de línea muestra ingresos y gastos de los últimos 6 períodos.
+- [ ] El usuario puede exportar un período a `.xlsx` con filtros de contenido.
+- [ ] Las transacciones en USD u otra moneda se registran y visualizan en su moneda original.
+- [ ] ✅ **Alcance 1 completo.**
+
+---
+
+### Sprint 7 — Tareas: Núcleo 📋
+> **Puntos:** 14 · **Objetivo:** el usuario puede gestionar sus tareas diarias de forma rápida y sin fricción
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A2-001 | Crear una tarea rápidamente | 3 | 🔴 |
+| HU-A2-002 | Agregar detalle a una tarea | 3 | 🔴 |
+| HU-A2-003 | Editar una tarea existente | 2 | 🔴 |
+| HU-A2-004 | Completar una tarea desde la lista | 2 | 🔴 |
+| HU-A2-005 | Eliminar una tarea | 1 | 🔴 |
+| HU-A2-006 | Listar y filtrar tareas | 3 | 🔴 |
+
+**Definición de "done" del sprint:**
+- [ ] El usuario crea una tarea escribiendo solo el título en ≤ 2 toques.
+- [ ] Puede enriquecer la tarea con todos los campos opcionales.
+- [ ] Puede completar una tarea directamente desde el checkbox en la lista.
+- [ ] Las tareas se agrupan por fecha y se pueden filtrar por estado, prioridad y categoría.
+
+---
+
+### Sprint 8 — Tareas: Detalle, Subtareas y Recordatorios 📋
+> **Puntos:** 11 · **Objetivo:** las tareas tienen toda la profundidad necesaria para planificar compromisos
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A2-007 | Ver detalle de una tarea | 1 | 🔴 |
+| HU-A2-008 | Agregar subtareas a una tarea | 3 | 🟠 |
+| HU-A2-009 | Asignar prioridad a una tarea | 1 | 🟠 |
+| HU-A2-011 | Configurar un recordatorio para una tarea | 3 | 🔴 |
+| HU-A2-012 | Cancelar o modificar un recordatorio | 1 | 🟠 |
+| HU-A2-016 | Asociar un valor monetario a una tarea | 2 | 🟠 |
+
+**Definición de "done" del sprint:**
+- [ ] El detalle muestra todos los campos y el progreso de subtareas.
+- [ ] Las subtareas son marcables directamente desde el detalle.
+- [ ] Se envía notificación push en la fecha/hora configurada del recordatorio.
+- [ ] Las tareas con valor monetario lo muestran en la lista y en el detalle.
+
+---
+
+### Sprint 9 — Tareas: Calendario y Personalización 📋
+> **Puntos:** 12 · **Objetivo:** visión temporal de la agenda y personalización del sistema de prioridades
+
+| ID | Historia | Pts | Prioridad |
+|---|---|---|---|
+| HU-A2-013 | Ver tareas en vista de mes | 5 | 🟠 |
+| HU-A2-014 | Ver tareas en vista de semana | 3 | 🟡 |
+| HU-A2-015 | Crear tarea directamente desde el calendario | 2 | 🟡 |
+| HU-A2-010 | Crear prioridades personalizadas | 2 | 🟡 |
+
+**Definición de "done" del sprint:**
+- [ ] La vista mensual muestra puntos en días con tareas y lista al tocar un día.
+- [ ] La vista semanal muestra tareas en cuadrícula por columna de día.
+- [ ] Long press en una fecha del calendario abre el formulario con esa fecha pre-llenada.
+- [ ] El usuario puede crear, editar y eliminar sus propias prioridades con color.
+- [ ] ✅ **Alcance 2 completo.**
+
+---
+
+## Resumen del Plan
+
+| Sprint | Enfoque | Puntos | Estado |
+|---|---|---|---|
+| 0 | Fundación técnica | — | ✅ |
+| 1 | Autenticación + Offline | 11 | 📋 |
+| 2 | Dashboard + CRUD Transacciones | 15 | 📋 |
+| 3 | Lista, Filtros y Categorías | 12 | 📋 |
+| 4 | Presupuesto Proyectado y Alertas | 11 | 📋 |
+| 5 | Transacciones Recurrentes | 11 | 📋 |
+| 6 | Reportes, Exportación y Monedas | 8 | 📋 |
+| 7 | Tareas: Núcleo | 14 | 📋 |
+| 8 | Tareas: Detalle, Subtareas y Recordatorios | 11 | 📋 |
+| 9 | Tareas: Calendario y Personalización | 12 | 📋 |
+| **Total** | | **105 pts · 18 semanas** | |
+
+> **MVP entregable al finalizar Sprint 2** (semana 6): registro, login, dashboard y CRUD completo de transacciones con modo offline.
+> **Alcance 1 completo al finalizar Sprint 6** (semana 12).
+> **Alcance 2 completo al finalizar Sprint 9** (semana 18).
+
+---
+
 ## MVP Propuesto — Alcance 1
 
 Las siguientes historias forman el producto mínimo viable funcional:
