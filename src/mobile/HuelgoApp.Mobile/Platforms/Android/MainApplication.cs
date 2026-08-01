@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace PersonalHub.Mobile;
+namespace HuelgoApp.Mobile;
 
 [Application]
 public class MainApplication : MauiApplication

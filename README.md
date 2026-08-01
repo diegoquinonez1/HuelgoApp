@@ -1,4 +1,4 @@
-# PersonalHub
+# HuelgoApp
 
 > App móvil multiplataforma para gestión de presupuesto personal y tareas.
 > Frontend en .NET MAUI — Backend modular en ASP.NET Core 9 — Desplegado en Azure.
@@ -6,10 +6,10 @@
 ## Estructura del Repositorio
 
 ```
-PersonalHub/
+HuelgoApp/
 ├── src/
 │   ├── mobile/
-│   │   └── PersonalHub.Mobile/          # MAUI (Android + iOS)
+│   │   └── HuelgoApp.Mobile/            # MAUI (Android + iOS)
 │   ├── backend/
 │   │   ├── Gateway/App.Gateway/         # YARP — API Gateway
 │   │   ├── Host/App.Host/               # Entry point — composition root

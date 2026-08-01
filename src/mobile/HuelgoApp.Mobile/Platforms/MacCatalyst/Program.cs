@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace PersonalHub.Mobile;
+namespace HuelgoApp.Mobile;
 
 public class Program
 {

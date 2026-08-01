@@ -745,7 +745,7 @@ graph LR
 │   └── workflows/              ← pipelines CI/CD
 ├── src/
 │   ├── mobile/
-│   │   └── PersonalHub.Mobile/ ← proyecto MAUI (Android + iOS)
+│   │   └── HuelgoApp.Mobile/   ← proyecto MAUI (Android + iOS)
 │   ├── backend/
 │   │   ├── Gateway/App.Gateway/ ← YARP Gateway
 │   │   ├── Host/App.Host/       ← entry point, DI composition root

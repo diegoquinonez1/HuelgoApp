@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace PersonalHub.Mobile;
+namespace HuelgoApp.Mobile;
 
 public partial class App : Application
 {

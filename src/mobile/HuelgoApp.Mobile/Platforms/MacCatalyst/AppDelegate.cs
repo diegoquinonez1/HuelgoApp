@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace PersonalHub.Mobile;
+namespace HuelgoApp.Mobile;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

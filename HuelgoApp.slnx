@@ -43,13 +43,13 @@
     <Project Path="src/backend/Shared/Shared.Kernel/Shared.Kernel.csproj" />
   </Folder>
   <Folder Name="/src/mobile/">
-    <Project Path="src/mobile/PersonalHub.Mobile/PersonalHub.Mobile.csproj" />
+    <Project Path="src/mobile/HuelgoApp.Mobile/HuelgoApp.Mobile.csproj" />
   </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/integration/">
-    <Project Path="tests/integration/PersonalHub.Tests.Integration/PersonalHub.Tests.Integration.csproj" />
+    <Project Path="tests/integration/HuelgoApp.Tests.Integration/HuelgoApp.Tests.Integration.csproj" />
   </Folder>
   <Folder Name="/tests/unit/">
-    <Project Path="tests/unit/PersonalHub.Tests.Unit/PersonalHub.Tests.Unit.csproj" />
+    <Project Path="tests/unit/HuelgoApp.Tests.Unit/HuelgoApp.Tests.Unit.csproj" />
   </Folder>
 </Solution>

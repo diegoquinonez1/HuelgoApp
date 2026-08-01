@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace PersonalHub.Mobile;
+namespace HuelgoApp.Mobile;
 
 public static class MauiProgram
 {

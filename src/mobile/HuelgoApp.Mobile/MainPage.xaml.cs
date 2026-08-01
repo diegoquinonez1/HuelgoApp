@@ -1,4 +1,4 @@
-﻿namespace PersonalHub.Mobile;
+﻿namespace HuelgoApp.Mobile;
 
 public partial class MainPage : ContentPage
 {
