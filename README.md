@@ -3,6 +3,10 @@
 > App móvil multiplataforma para gestión de presupuesto personal y tareas.
 > Frontend en .NET MAUI — Backend modular en ASP.NET Core 9 — Desplegado en Azure.
 
+## ¿Por qué HuelgoApp?
+
+Huelgo representa el espacio de calma y control que busca el usuario: tener margen para respirar, organizar sus finanzas y cumplir sus tareas sin caos. El nombre refleja la promesa de la app: recuperar claridad, prioridad y equilibrio en la vida diaria.
+
 ## Estructura del Repositorio
 
 ```
