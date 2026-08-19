@@ -2,6 +2,9 @@ using System.Security.Claims;
 using Identity.Application;
 using Identity.Infrastructure;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -17,7 +20,10 @@ public static class IdentityEndpoints
         var group = endpoints.MapGroup("/api/auth");
         group.MapPost("/register", RegisterAsync);
         group.MapPost("/login", LoginAsync);
-        group.MapPost("/logout", LogoutAsync).RequireAuthorization();
+        group.MapPost("/logout", LogoutAsync).RequireAuthorization(new AuthorizeAttribute
+        {
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
+        });
         endpoints.MapPost("/connect/token", TokenAsync);
         return endpoints;
     }
@@ -35,7 +41,7 @@ public static class IdentityEndpoints
             return Results.BadRequest(new { message = "The account could not be created. Check the supplied data or sign in." });
         }
 
-        return Results.SignIn(IdentityModuleServiceCollectionExtensions.CreatePrincipal(user), authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return Results.Created($"/api/auth/users/{user.Id}", new { user.Id, user.Email });
     }
 
     private static async Task<IResult> LoginAsync(LoginRequest request, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
@@ -69,13 +75,29 @@ public static class IdentityEndpoints
     private static async Task<IResult> TokenAsync(HttpContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
         var form = await context.Request.ReadFormAsync();
+        if (string.Equals(form["grant_type"], "refresh_token", StringComparison.Ordinal))
+        {
+            var authentication = await context.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            var subject = authentication.Principal?.FindFirstValue(OpenIddictConstants.Claims.Subject);
+            var existingUser = subject is null ? null : await userManager.FindByIdAsync(subject);
+            return existingUser is null
+                ? Results.Forbid(authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme])
+                : Results.SignIn(IdentityModuleServiceCollectionExtensions.CreatePrincipal(existingUser), authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
         if (!string.Equals(form["grant_type"], "password", StringComparison.Ordinal))
         {
             return Results.BadRequest(new { error = "unsupported_grant_type" });
         }
 
         var user = await userManager.FindByEmailAsync(form["username"].ToString());
-        if (user is null || !await signInManager.CanSignInAsync(user) || !await userManager.CheckPasswordAsync(user, form["password"].ToString()))
+        if (user is null)
+        {
+            return Results.Forbid(authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+        }
+
+        var result = await signInManager.CheckPasswordSignInAsync(user, form["password"].ToString(), lockoutOnFailure: true);
+        if (!result.Succeeded)
         {
             return Results.Forbid(authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }

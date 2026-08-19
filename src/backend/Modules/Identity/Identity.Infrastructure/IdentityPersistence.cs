@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
 using Identity.Application;
 using Identity.Domain;
 using Microsoft.AspNetCore.Identity;
@@ -58,8 +59,11 @@ public static class IdentityModuleServiceCollectionExtensions
                 options.AllowPasswordFlow();
                 options.AllowRefreshTokenFlow();
                 options.AcceptAnonymousClients();
+                options.RegisterScopes(OpenIddictConstants.Scopes.OfflineAccess);
+                options.SetIssuer(new Uri("https://localhost:7102/"));
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(15));
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
+                options.DisableAccessTokenEncryption();
                 options.AddDevelopmentEncryptionCertificate();
                 options.AddDevelopmentSigningCertificate();
                 options.UseAspNetCore().EnableTokenEndpointPassthrough().DisableTransportSecurityRequirement();
@@ -67,6 +71,7 @@ public static class IdentityModuleServiceCollectionExtensions
             .AddValidation(options =>
             {
                 options.UseLocalServer();
+                options.EnableTokenEntryValidation();
                 options.UseAspNetCore();
             });
 
@@ -80,13 +85,16 @@ public static class IdentityModuleServiceCollectionExtensions
         {
             new Claim(OpenIddictConstants.Claims.Subject, user.Id),
             new Claim(OpenIddictConstants.Claims.Email, user.Email ?? string.Empty),
-            new Claim(OpenIddictConstants.Claims.Name, user.UserName ?? string.Empty)
+            new Claim(OpenIddictConstants.Claims.Name, user.UserName ?? string.Empty),
+            new Claim("security_stamp", user.SecurityStamp ?? string.Empty)
         })
         {
             claim.SetDestinations(OpenIddictConstants.Destinations.AccessToken);
             identity.AddClaim(claim);
         }
-        return new ClaimsPrincipal(identity);
+        var principal = new ClaimsPrincipal(identity);
+        principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
+        return principal;
     }
 
     public static async Task<(IdentityResult Result, ApplicationUser? User)> RegisterAsync(
@@ -102,6 +110,11 @@ public static class IdentityModuleServiceCollectionExtensions
         if (!string.Equals(request.Password, request.ConfirmPassword, StringComparison.Ordinal))
         {
             return (IdentityResult.Failed(new IdentityError { Description = "Passwords do not match." }), null);
+        }
+
+        if (!new EmailAddressAttribute().IsValid(request.Email))
+        {
+            return (IdentityResult.Failed(new IdentityError { Description = "Email address is invalid." }), null);
         }
 
         var user = new ApplicationUser

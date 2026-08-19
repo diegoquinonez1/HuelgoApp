@@ -57,3 +57,5 @@ dotnet test tests/unit/HuelgoApp.Tests.Unit/HuelgoApp.Tests.Unit.csproj
 dotnet test tests/integration/HuelgoApp.Tests.Integration/HuelgoApp.Tests.Integration.csproj
 dotnet build HuelgoApp.slnx --no-restore
 ```
+
+La validacion end-to-end sobre PostgreSQL comprueba registro, access token, refresh token, bloqueo tras cinco fallos, sincronizacion `push`/`pull`, resolucion `last write wins` y revocacion de sesion por `SecurityStamp`.

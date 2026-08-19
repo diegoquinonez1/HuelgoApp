@@ -28,7 +28,8 @@ public sealed class SyncService(SyncDbContext dbContext)
     {
         foreach (var change in changes)
         {
-            var existing = await dbContext.Records.SingleOrDefaultAsync(record => record.UserId == userId && record.EntityType == change.EntityType && record.EntityId == change.EntityId, cancellationToken);
+            var existing = dbContext.Records.Local.SingleOrDefault(record => record.UserId == userId && record.EntityType == change.EntityType && record.EntityId == change.EntityId)
+                ?? await dbContext.Records.SingleOrDefaultAsync(record => record.UserId == userId && record.EntityType == change.EntityType && record.EntityId == change.EntityId, cancellationToken);
             if (existing is null)
             {
                 dbContext.Records.Add(new SyncRecord

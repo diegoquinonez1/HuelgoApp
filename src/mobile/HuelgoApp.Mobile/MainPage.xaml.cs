@@ -46,7 +46,18 @@ public partial class MainPage : ContentPage
 		UpdateConnectionStatus();
 	}
 
-	private void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e) => MainThread.BeginInvokeOnMainThread(UpdateConnectionStatus);
+	private void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
+	{
+		MainThread.BeginInvokeOnMainThread(async () =>
+		{
+			UpdateConnectionStatus();
+			if (e.NetworkAccess == NetworkAccess.Internet)
+			{
+				await _authApiClient.SyncPendingChangesAsync();
+				StatusLabel.Text = "Sincronización completada.";
+			}
+		});
+	}
 
 	private void UpdateConnectionStatus() => ConnectionLabel.Text = Connectivity.Current.NetworkAccess == NetworkAccess.Internet ? "En línea" : "Sin conexión: los cambios quedan pendientes.";
 

@@ -31,13 +31,13 @@
 **para** tener una cuenta personal y privada donde guardar mis datos financieros.
 
 **Criterios de aceptación:**
-- [ ] El formulario tiene campos: nombre(s), apellido(s), fecha de nacimiento, email, contraseña, confirmar contraseña.
-- [ ] El email debe tener formato válido y no estar registrado previamente.
-- [ ] La contraseña debe tener mínimo 8 caracteres.
-- [ ] La confirmación de contraseña debe coincidir.
-- [ ] Al registrarse exitosamente, el usuario queda autenticado y va al Dashboard.
-- [ ] Si el email ya existe, se muestra un mensaje claro sin revelar datos de otros usuarios.
-- [ ] La fecha de nacimiento es obligatoria y el usuario debe ser mayor de edad (≥ 13 años).
+- [x] El formulario tiene campos: nombre(s), apellido(s), fecha de nacimiento, email, contraseña, confirmar contraseña.
+- [x] El email debe tener formato válido y no estar registrado previamente.
+- [x] La contraseña debe tener mínimo 8 caracteres.
+- [x] La confirmación de contraseña coincide.
+- [x] Al registrarse exitosamente, el usuario queda autenticado y va al Dashboard inicial.
+- [x] Si el email ya existe, se muestra un mensaje claro sin revelar datos de otros usuarios.
+- [x] La fecha de nacimiento es obligatoria y el usuario debe ser mayor de edad (≥ 13 años).
 
 ---
 
@@ -49,10 +49,10 @@
 **para** acceder a mis datos desde cualquier dispositivo.
 
 **Criterios de aceptación:**
-- [ ] La sesión persiste en el dispositivo; no se pide login en cada apertura de la app.
-- [ ] Si las credenciales son incorrectas, se muestra un mensaje genérico (sin indicar cuál campo falló).
-- [ ] Después de 5 intentos fallidos, la cuenta se bloquea por 5 minutos.
-- [ ] Al iniciar sesión correctamente, el usuario va al Dashboard.
+- [x] La sesión persiste en el dispositivo; no se pide login en cada apertura de la app.
+- [x] Si las credenciales son incorrectas, se muestra un mensaje genérico (sin indicar cuál campo falló).
+- [x] Después de 5 intentos fallidos, la cuenta se bloquea por 5 minutos.
+- [x] Al iniciar sesión correctamente, el usuario va al Dashboard inicial.
 
 ---
 
@@ -79,9 +79,9 @@
 **para** proteger mis datos si comparto el dispositivo.
 
 **Criterios de aceptación:**
-- [ ] La opción de cerrar sesión está visible en el perfil / configuración.
-- [ ] Al cerrar sesión, los tokens se invalidan y se elimina la sesión local.
-- [ ] El usuario es redirigido a la pantalla de login.
+- [x] La opción de cerrar sesión está visible en el perfil / configuración.
+- [x] Al cerrar sesión, los tokens se invalidan y se elimina la sesión local.
+- [x] El usuario es redirigido a la pantalla de login.
 
 ---
 
@@ -455,12 +455,12 @@
 **para** no depender de la conexión para llevar mis finanzas al día.
 
 **Criterios de aceptación:**
-- [ ] Todas las operaciones de lectura y escritura funcionan sin conexión.
-- [ ] Los datos se guardan localmente en SQLite de forma inmediata.
-- [ ] La app muestra un indicador visual discreto cuando está en modo offline.
-- [ ] Cuando se recupera la conexión, la sincronización ocurre automáticamente en background.
-- [ ] El usuario recibe confirmación cuando la sincronización se completó.
-- [ ] En caso de conflicto, gana el registro con el `updated_at` más reciente.
+- [x] La infraestructura de lectura y escritura offline funciona mediante la cola SQLite.
+- [x] Los cambios se guardan localmente en SQLite de forma inmediata.
+- [x] La app muestra un indicador visual discreto cuando está en modo offline.
+- [x] Cuando se recupera la conexión, la sincronización ocurre automáticamente en background.
+- [x] El usuario recibe confirmación cuando la sincronización se completó.
+- [x] En caso de conflicto, gana el registro con el `updated_at` más reciente.
 
 ---
 
@@ -803,7 +803,7 @@
 - [x] Un usuario existente puede iniciar y cerrar sesión.
 - [x] Las operaciones de escritura se persisten en SQLite cuando no hay red.
 - [x] Al recuperar la red, los datos se sincronizan con el servidor.
-- [x] Tests unitarios e integración para flujos de auth y sync básico.
+- [x] Tests unitarios, integración y validación end-to-end para flujos de auth y sync básico.
 
 ---
 

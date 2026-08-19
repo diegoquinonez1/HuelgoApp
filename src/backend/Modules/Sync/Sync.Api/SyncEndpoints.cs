@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sync.Application;
@@ -11,7 +13,10 @@ public static class SyncEndpoints
 {
     public static IEndpointRouteBuilder MapSyncEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/sync").RequireAuthorization();
+        var group = endpoints.MapGroup("/api/sync").RequireAuthorization(new AuthorizeAttribute
+        {
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme
+        });
         group.MapPost("/push", PushAsync);
         group.MapGet("/pull", PullAsync);
         return endpoints;

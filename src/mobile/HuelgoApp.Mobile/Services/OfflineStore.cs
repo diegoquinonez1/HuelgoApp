@@ -10,6 +10,16 @@ public sealed class OfflineStore
 
     public Task QueueAsync(string entityType, string entityId, string payload) =>
         _database.InsertAsync(new PendingSyncChange { EntityType = entityType, EntityId = entityId, Payload = payload, UpdatedAt = DateTimeOffset.UtcNow });
+
+    public Task<List<PendingSyncChange>> GetPendingAsync() => _database.Table<PendingSyncChange>().OrderBy(change => change.Id).ToListAsync();
+
+    public Task RemoveAsync(IEnumerable<PendingSyncChange> changes) => _database.RunInTransactionAsync(connection =>
+    {
+        foreach (var change in changes)
+        {
+            connection.Delete(change);
+        }
+    });
 }
 
 public sealed class PendingSyncChange
