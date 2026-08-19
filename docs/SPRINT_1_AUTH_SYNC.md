@@ -10,6 +10,12 @@
 - Endpoint de sincronizacion delta protegido por token, aislado por usuario, idempotente y con resolucion `last write wins` por `updated_at`.
 - Cliente MAUI con `SecureStorage`, SQLite, estado de conectividad y pantalla de registro/login/logout.
 
+## Limite de alcance
+
+Sprint 1 entrega la plataforma de autenticacion y sincronizacion. La cola SQLite, el contrato delta y el endpoint Sync ya estan disponibles para las entidades de negocio.
+
+La historia HU-A1-026 no se considera cerrada hasta que una transaccion real pueda crearse, leerse y modificarse sin red, y luego sincronizarse automaticamente. Esa validacion se implementa con HU-A1-009 en Sprint 2, sin redisenar la infraestructura de Sync.
+
 ## Endpoints
 
 | Metodo | Ruta | Autenticacion | Descripcion |

@@ -448,19 +448,22 @@
 ---
 
 #### HU-A1-026 — Usar la app sin conexión a internet
-> 🔴 Must Have · 5 pts · Completado
+> 🔴 Must Have · 5 pts · En progreso
 
 **Como** usuario,
 **quiero** registrar transacciones y consultar mis datos aunque no tenga internet,
 **para** no depender de la conexión para llevar mis finanzas al día.
 
 **Criterios de aceptación:**
-- [x] La infraestructura de lectura y escritura offline funciona mediante la cola SQLite.
-- [x] Los cambios se guardan localmente en SQLite de forma inmediata.
+
+- [ ] Todas las operaciones de lectura y escritura de transacciones funcionan sin conexión.
+- [ ] Las transacciones se guardan localmente en SQLite de forma inmediata.
 - [x] La app muestra un indicador visual discreto cuando está en modo offline.
-- [x] Cuando se recupera la conexión, la sincronización ocurre automáticamente en background.
-- [x] El usuario recibe confirmación cuando la sincronización se completó.
+- [ ] Cuando se recupera la conexión, las transacciones se sincronizan automáticamente en background.
+- [ ] El usuario recibe confirmación cuando la sincronización de transacciones se completó.
 - [x] En caso de conflicto, gana el registro con el `updated_at` más reciente.
+
+> **Nota de implementación:** La infraestructura base está completada: SQLite, cola de cambios, endpoint delta autenticado, aislamiento por usuario y resolución `last write wins`. La validación funcional pendiente se completa junto con **HU-A1-009 — Registrar una transacción** en Sprint 2, cuando exista la primera entidad de negocio sincronizable.
 
 ---
 
@@ -788,7 +791,7 @@
 
 ---
 
-### Sprint 1 — Autenticación + Offline-first ✅
+### Sprint 1 — Autenticación + Offline-first 🔄
 > **Puntos:** 11 · **Objetivo:** el usuario puede registrarse, iniciar sesión y operar sin conexión
 
 | ID | Historia | Pts | Prioridad |
@@ -801,8 +804,8 @@
 **Definición de "done" del sprint:**
 - [x] Un usuario nuevo puede registrarse y quedar autenticado.
 - [x] Un usuario existente puede iniciar y cerrar sesión.
-- [x] Las operaciones de escritura se persisten en SQLite cuando no hay red.
-- [x] Al recuperar la red, los datos se sincronizan con el servidor.
+- [x] La infraestructura SQLite, la cola de cambios y Sync delta están implementados y validados.
+- [ ] Una transacción real se persiste localmente y se sincroniza al recuperar red; depende de HU-A1-009 en Sprint 2.
 - [x] Tests unitarios, integración y validación end-to-end para flujos de auth y sync básico.
 
 ---
@@ -963,7 +966,7 @@
 | Sprint | Enfoque | Puntos | Estado |
 |---|---|---|---|
 | 0 | Fundación técnica | — | ✅ |
-| 1 | Autenticación + Offline | 11 | ✅ |
+| 1 | Autenticación + Offline | 11 | 🔄 |
 | 2 | Dashboard + CRUD Transacciones | 15 | 📋 |
 | 3 | Lista, Filtros y Categorías | 12 | 📋 |
 | 4 | Presupuesto Proyectado y Alertas | 11 | 📋 |
