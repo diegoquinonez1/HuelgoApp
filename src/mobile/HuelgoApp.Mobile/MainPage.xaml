@@ -4,32 +4,24 @@
              x:Class="HuelgoApp.Mobile.MainPage">
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a submarine number ten" />
-
-            <Label
-                Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
-
-            <Label
-                Text="Welcome to &#10;.NET Multi-platform App UI"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
-
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
+        <VerticalStackLayout Padding="24" Spacing="14">
+            <Label Text="HuelgoApp" Style="{StaticResource Headline}" />
+            <Label x:Name="ConnectionLabel" Text="Comprobando conexión..." Style="{StaticResource SubHeadline}" />
+            <Label x:Name="StatusLabel" Text="Inicia sesión o crea una cuenta." />
+            <VerticalStackLayout x:Name="RegistrationFields" Spacing="8">
+                <Entry x:Name="FirstNameEntry" Placeholder="Nombre" />
+                <Entry x:Name="LastNameEntry" Placeholder="Apellido" />
+                <DatePicker x:Name="BirthDatePicker" />
+            </VerticalStackLayout>
+            <Entry x:Name="EmailEntry" Placeholder="Correo electrónico" Keyboard="Email" />
+            <Entry x:Name="PasswordEntry" Placeholder="Contraseña" IsPassword="True" />
+            <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirmar contraseña" IsPassword="True" />
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Crear cuenta" Clicked="OnRegisterClicked" />
+                <Button Text="Iniciar sesión" Clicked="OnLoginClicked" />
+            </HorizontalStackLayout>
+            <Button x:Name="LogoutButton" Text="Cerrar sesión" IsVisible="False" Clicked="OnLogoutClicked" />
+            <Label x:Name="DashboardLabel" IsVisible="False" Text="Sesión activa. El Dashboard financiero se implementará en el Sprint 2." />
         </VerticalStackLayout>
     </ScrollView>
 

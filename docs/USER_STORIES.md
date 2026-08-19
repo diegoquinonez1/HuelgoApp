@@ -1,7 +1,7 @@
 # Historias de Usuario — PersonalHub
 
 > **Estado:** Definición completa — Alcance 1 y Alcance 2
-> **Última actualización:** 2026-07-30
+> **Última actualización:** 2026-08-18
 > **Rol único:** Usuario (persona individual que gestiona sus finanzas y tareas personales)
 
 ---
@@ -24,7 +24,7 @@
 ---
 
 #### HU-A1-001 — Registro de cuenta
-> 🔴 Must Have · 3 pts · Pendiente
+> 🔴 Must Have · 3 pts · Completado
 
 **Como** usuario nuevo,
 **quiero** registrarme con mi nombre, apellido, fecha de nacimiento, email y contraseña,
@@ -42,7 +42,7 @@
 ---
 
 #### HU-A1-002 — Inicio de sesión
-> 🔴 Must Have · 2 pts · Pendiente
+> 🔴 Must Have · 2 pts · Completado
 
 **Como** usuario registrado,
 **quiero** iniciar sesión con mi email y contraseña,
@@ -72,7 +72,7 @@
 ---
 
 #### HU-A1-004 — Cierre de sesión
-> 🔴 Must Have · 1 pt · Pendiente
+> 🔴 Must Have · 1 pt · Completado
 
 **Como** usuario autenticado,
 **quiero** cerrar sesión desde la app,
@@ -448,7 +448,7 @@
 ---
 
 #### HU-A1-026 — Usar la app sin conexión a internet
-> 🔴 Must Have · 5 pts · Pendiente
+> 🔴 Must Have · 5 pts · Completado
 
 **Como** usuario,
 **quiero** registrar transacciones y consultar mis datos aunque no tenga internet,
@@ -788,7 +788,7 @@
 
 ---
 
-### Sprint 1 — Autenticación + Offline-first 📋
+### Sprint 1 — Autenticación + Offline-first ✅
 > **Puntos:** 11 · **Objetivo:** el usuario puede registrarse, iniciar sesión y operar sin conexión
 
 | ID | Historia | Pts | Prioridad |
@@ -799,11 +799,11 @@
 | HU-A1-026 | Usar la app sin conexión | 5 | 🔴 |
 
 **Definición de "done" del sprint:**
-- [ ] Un usuario nuevo puede registrarse y quedar autenticado.
-- [ ] Un usuario existente puede iniciar y cerrar sesión.
-- [ ] Las operaciones de escritura se persisten en SQLite cuando no hay red.
-- [ ] Al recuperar la red, los datos se sincronizan con el servidor.
-- [ ] Tests unitarios e integración para flujos de auth y sync básico.
+- [x] Un usuario nuevo puede registrarse y quedar autenticado.
+- [x] Un usuario existente puede iniciar y cerrar sesión.
+- [x] Las operaciones de escritura se persisten en SQLite cuando no hay red.
+- [x] Al recuperar la red, los datos se sincronizan con el servidor.
+- [x] Tests unitarios e integración para flujos de auth y sync básico.
 
 ---
 
@@ -963,7 +963,7 @@
 | Sprint | Enfoque | Puntos | Estado |
 |---|---|---|---|
 | 0 | Fundación técnica | — | ✅ |
-| 1 | Autenticación + Offline | 11 | 📋 |
+| 1 | Autenticación + Offline | 11 | ✅ |
 | 2 | Dashboard + CRUD Transacciones | 15 | 📋 |
 | 3 | Lista, Filtros y Categorías | 12 | 📋 |
 | 4 | Presupuesto Proyectado y Alertas | 11 | 📋 |

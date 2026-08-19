@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using HuelgoApp.Mobile.Services;
 
 namespace HuelgoApp.Mobile;
 
@@ -14,6 +15,11 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
+
+		builder.Services.AddSingleton<OfflineStore>();
+		builder.Services.AddSingleton<AuthApiClient>();
+		builder.Services.AddSingleton<MainPage>();
+		builder.Services.AddSingleton<AppShell>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

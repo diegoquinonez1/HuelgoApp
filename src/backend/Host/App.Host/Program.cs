@@ -1,41 +1,35 @@
-var builder = WebApplication.CreateBuilder(args);
+using Identity.Api;
+using Identity.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using OpenIddict.Validation.AspNetCore;
+using Sync.Api;
+using Sync.Infrastructure;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("Postgres")
+    ?? throw new InvalidOperationException("ConnectionStrings:Postgres must be configured.");
+
+builder.Services.AddHealthChecks();
+builder.Services.AddIdentityModule(connectionString);
+builder.Services.AddSyncModule(connectionString);
+builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Database:ApplyMigrations"))
 {
-    app.MapOpenApi();
+    using var scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<SyncDbContext>().Database.MigrateAsync();
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapHealthChecks("/health");
+app.MapIdentityEndpoints();
+app.MapSyncEndpoints();
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public partial class Program;

@@ -64,8 +64,20 @@ dotnet run --project src/backend/Host/App.Host
 dotnet run --project src/backend/Gateway/App.Gateway
 ```
 
+## Sprint 1: Autenticación y sincronización
+
+El Sprint 1 implementa registro, inicio y cierre de sesión con ASP.NET Core Identity y OpenIddict, además de la base de sincronización offline-first. Todos los proyectos usan .NET 10.
+
+1. Levanta PostgreSQL con Docker Compose.
+2. Ejecuta el Host en perfil Development. La configuración `Database:ApplyMigrations` aplica las migraciones de los esquemas `identity` y `sync`.
+3. Ejecuta Gateway. El cliente MAUI usa `https://localhost:7291` como entrada local.
+4. Inicia la app MAUI para registrar o iniciar sesión. Los tokens se guardan con `SecureStorage` y SQLite crea su cola local en el directorio privado de la aplicación.
+
+Consulta [la guía técnica del Sprint 1](docs/SPRINT_1_AUTH_SYNC.md) para los contratos HTTP, seguridad y comandos de validación.
+
 ## Documentación
 
 - [Requerimiento de Producto](docs/REQUIREMENT.md)
 - [Wireframes](docs/WIREFRAMES.md)
 - [Architecture Decision Records](docs/adr/)
+- [Sprint 1: autenticación y sincronización](docs/SPRINT_1_AUTH_SYNC.md)
